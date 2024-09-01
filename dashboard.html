@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="dashboard/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <button class="menu-btn">&#9776;</button>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="#">Penetapan CPL CPMK</a></li>
+                <li><a href="#">CPL</a></li>
+                <li><a href="#">CPMK</a></li>
+                <li><a href="#">Kurikulum</a></li>
+                <li><a href="#">Mata Kuliah</a></li>
+                <li><a href="#">Organisasi</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <div class="user-info">
+                <img id="user-photo" alt="User Icon" class="user-icon">
+                <span id="user-name"></span>
+                <span style="margin-left: 10px;">
+                    <form id="loginForm">
+                        <button type="submit" onclick="confirm('Ingin logout?')">Logout</button>
+                    </form>
+                </span>
+            </div>
+        </div>
+        <div class="footer">
+            <p>FTIK UMRAH 2024</p>
+        </div>
+    </div>
+    <script src="dashboard/script.js"></script>
+</body>
+</html>

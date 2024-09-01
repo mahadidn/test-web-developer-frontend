@@ -5,7 +5,6 @@ html, body {
     height: 100%;
 }
 
-
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -65,4 +64,39 @@ body {
     left: 50%;
     transform: translateX(-50%);
     color: #004c70;
+}
+
+/* Dropdown Menu Styling */
+.dropdown {
+    position: relative;
+}
+
+.dropbtn {
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #004c70;
+    min-width: 200px;
+    z-index: 1;
+}
+
+.dropdown-content li {
+    padding: 12px 16px;
+}
+
+.dropdown-content li a {
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown-content li a:hover {
+    background-color: #003352;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }

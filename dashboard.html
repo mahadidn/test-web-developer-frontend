@@ -11,19 +11,42 @@
         <button class="menu-btn">&#9776;</button>
         <nav class="nav-menu">
             <ul>
-                <li><a href="#">Penetapan CPL CPMK</a></li>
-                <li><a href="#">CPL</a></li>
-                <li><a href="#">CPMK</a></li>
-                <li><a href="#">Kurikulum</a></li>
-                <li><a href="#">Mata Kuliah</a></li>
-                <li><a href="#">Organisasi</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Penetapan CPL CPMK</a>
+                    <ul class="dropdown-content">
+                        <li><a href="#">CPL</a></li>
+                        <li><a href="#">CPMK</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Kurikulum</a>
+                    <ul class="dropdown-content">
+                        <li><a href="#">Mata Kuliah</a></li>
+                        <li><a href="#">Organisasi</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Laporan</a>
+                    <ul class="dropdown-content">
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">PPP</a>
+                    <ul class="dropdown-content">
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Kelas Mengajar</a>
+                    <ul class="dropdown-content">
+                    </ul>
+                </li>
             </ul>
         </nav>
     </div>
     <div class="main-content">
         <div class="header">
             <div class="user-info">
-                <img id="user-photo" alt="User Icon" class="user-icon">
+                <img id="user-photo" class="user-icon">
                 <span id="user-name"></span>
                 <span style="margin-left: 10px;">
                     <form id="loginForm">

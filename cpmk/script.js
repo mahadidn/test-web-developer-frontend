@@ -4,6 +4,48 @@ document.addEventListener("DOMContentLoaded", async function () {
     window.location.href = "login.html";
   }
 
+  await populateKodecpmkDropdown();
+
+  async function populateKodecpmkDropdown(selectId, selectedValue) {
+        try {
+            const response = await fetch('http://localhost:9871/api/v1/users/cpl/get', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('authToken')
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const kodecplList = data.cpl;
+
+                const selectElement = document.getElementById(selectId);
+                selectElement.innerHTML = ''; // Kosongkan elemen select sebelum mengisi ulang
+
+                kodecplList.forEach(cpl => {
+                    const option = document.createElement('option');
+                    option.value = cpl.kodecpl;
+                    option.textContent = cpl.kodecpl + ' - ' + cpl.deskripsi;
+
+                    // Set the option as selected if it matches the selectedValue
+                    if (cpl.kodecpl === selectedValue) {
+                        option.selected = true;
+                    }
+
+                    selectElement.appendChild(option);
+                });
+            } else {
+                console.error('Failed to fetch kodecpl data', await response.json());
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+
+
+
   const editButtons = document.querySelectorAll(".edit");
   const deleteButtons = document.querySelectorAll(".delete");
   const rights = localStorage.getItem("rights");
@@ -40,10 +82,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       i = 1;
       cpmk.forEach((item, index) => {
         const row = document.createElement('tr');
+        populateKodecpmkDropdown(`kodecpl-select-${index}`, item.kodecpl);
         row.innerHTML = `
             <td>${index + 1}</td>
             <td class="kodecpmk">${item.kodecpmk}</td>
-            <td class="kodecpl">${item.kodecpl}</td>
+            <td><select name="kodecpl" id="kodecpl-select-${index}"></select></td>
             <td class="deskripsi">${item.deskripsi}</td>
             <td>
                 <input name="kodecpmk${i}" value="${item.kodecpmk}" hidden>
@@ -52,8 +95,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             </td>
         `;
         tbody.appendChild(row);
+
+        // Populasi dropdown untuk baris yang baru ditambahkan, dengan selectedValue
         i++;
     });
+
+
 
 
       const row2 = document.createElement("tr");

@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const editButtons = document.querySelectorAll(".edit");
   const deleteButtons = document.querySelectorAll(".delete");
   const rights = localStorage.getItem("rights");
-  let cpl = [];
+  let cpmk = [];
 
   try {
-    const response = await fetch("http://localhost:9871/api/v1/users/cpl/get", {
+    const response = await fetch("http://localhost:9871/api/v1/users/cpmk/get", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -20,13 +20,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (response.ok) {
       const data = await response.json(); // Menunggu parsing JSON
-      console.log("Data received from API:", data.cpl);
+      console.log("Data received from API:", data.cpmk);
 
       // Cek apakah data.cpl ada dan merupakan array
-      if (data.cpl && Array.isArray(data.cpl)) {
-        cpl = data.cpl; // Mengambil array CPL dari response
+      if (data.cpmk && Array.isArray(data.cpmk)) {
+        cpmk = data.cpmk; // Mengambil array CPL dari response
       } else {
-        console.error("Expected data.cpl to be an array but got:", data.cpl);
+        console.error("Expected data.cpl to be an array but got:", data);
         return;
       }
 
@@ -38,16 +38,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       // Tambahkan setiap data dari array CPL ke tabel
       i = 1;
-      cpl.forEach((item, index) => {
+      cpmk.forEach((item, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${index + 1}</td>
+            <td class="kodecpmk">${item.kodecpmk}</td>
             <td class="kodecpl">${item.kodecpl}</td>
             <td class="deskripsi">${item.deskripsi}</td>
             <td>
-                <input name="kodecpl${i}" value="${item.kodecpl}" hidden>
+                <input name="kodecpmk${i}" value="${item.kodecpmk}" hidden>
                 <button class="action-btn edit" title="Edit">✏️</button>
-                <button class="action-btn delete" data-kodecpl="${item.kodecpl}" title="Delete">🗑️</button>
+                <button class="action-btn delete" data-kodecpmk="${item.kodecpmk}" title="Delete">🗑️</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -58,6 +59,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const row2 = document.createElement("tr");
       row2.innerHTML = `
                 <td>${i}</td>
+                <td><input name="kodecpmk"></td>
                 <td><input name="kodecpml"></td>
                 <td><input name="deskripsi"></td>
                 <td></td>
@@ -69,9 +71,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       document.querySelectorAll('.edit').forEach(button => {
     button.addEventListener('click', function() {
         const row = this.closest('tr');
+        const kodecpmkCell = row.querySelector('.kodecpmk');
         const kodecplCell = row.querySelector('.kodecpl');
         const deskripsiCell = row.querySelector('.deskripsi');
 
+        const orignilaiKodeCpmk = kodecpmkCell.textContent;
         const originalKodecpl = kodecplCell.textContent;
         const originalDeskripsi = deskripsiCell.textContent;
 
@@ -83,9 +87,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         // Mengubah sel menjadi input
+        kodecpmkCell.innerHTML = `<input type="text" class="edit-kodecpmk" value="${orignilaiKodeCpmk}" />`
         kodecplCell.innerHTML = `<input type="text" class="edit-kodecpl" value="${originalKodecpl}" />`;
         deskripsiCell.innerHTML = `<input type="text" class="edit-deskripsi" value="${originalDeskripsi}" />`;
 
+        const kodeCpmkInput = row.querySelector('.edit-kodecpmk');
         const kodecplInput = row.querySelector('.edit-kodecpl');
         const deskripsiInput = row.querySelector('.edit-deskripsi');
 
@@ -98,19 +104,21 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (event.key === 'Enter') {
                 event.preventDefault();
 
+                const newKodeCpmk = kodeCpmkInput.value.trim();
                 const newKodecpl = kodecplInput.value.trim();
                 const newDeskripsi = deskripsiInput.value.trim();
 
                 if (newKodecpl && newDeskripsi) {
                     try {
-                        const updateResponse = await fetch(`http://localhost:9871/api/v1/users/cpl/update/${originalKodecpl}`, {
+                        const updateResponse = await fetch(`http://localhost:9871/api/v1/users/cpmk/update/${orignilaiKodeCpmk}`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Authorization': localStorage.getItem('authToken') // Menggunakan token dari localStorage
                             },
                             body: JSON.stringify({
-                                cpl: {
+                                cpmk: {
+                                    kodecpmk: newKodeCpmk,
                                     kodecpl: newKodecpl,
                                     deskripsi: newDeskripsi
                                 }
@@ -118,10 +126,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                         });
 
                         if (updateResponse.ok) {
-                            console.log(newKodecpl, newDeskripsi);
-                            console.log(`CPL with Kode CPL: ${originalKodecpl} updated successfully`);
+                            console.log(newKodeCpmk, newKodecpl, newDeskripsi);
+                            console.log(`CPMK with Kode CPMK: ${orignilaiKodeCpmk} updated successfully`);
                             console.log(updateResponse);
                             // Mengembalikan input menjadi text biasa
+                            kodecpmkCell.textContent = newKodeCpmk;
                             kodecplCell.textContent = newKodecpl;
                             deskripsiCell.textContent = newDeskripsi;
 
@@ -129,11 +138,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                             lastRow.style.display = '';
                         } else {
                             console.error('Failed to update CPL', await updateResponse.json());
+                            console.log(updateResponse);
                         }
                     } catch (error) {
                         console.error('Error:', error);
                     }
                 } else {
+                    console.log('newKodeCPMK: ', newKodecpl);
                     console.log("newKodecpl:", newKodecpl);
                     console.log("newDeskripsi:", newDeskripsi);
 
@@ -154,15 +165,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       document.querySelectorAll(".delete").forEach((button) => {
         button.addEventListener("click", async function () {
           const kodecpl = this.getAttribute("data-kodecpl");
+          const kodeCpmk = this.getAttribute('data-kodecpmk');
 
           if (
             confirm(
-              `Are you sure you want to delete CPL with Kode CPL: ${kodecpl}?`
+              `Are you sure you want to delete CPMK with Kode CPMK: ${kodeCpmk}?`
             )
           ) {
             try {
               const deleteResponse = await fetch(
-                `http://localhost:9871/api/v1/users/cpl/delete`,
+                `http://localhost:9871/api/v1/users/cpmk/remove/${kodeCpmk}`,
                 {
                   method: "POST",
                   headers: {
@@ -170,8 +182,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     Authorization: localStorage.getItem("authToken"),
                   },
                   body: JSON.stringify({
-                    cpl: {
-                      kodecpl: kodecpl,
+                    cpmk: {
+                      kodecpmk: kodeCpmk,
                     },
                   }),
                 }
@@ -179,13 +191,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
               if (deleteResponse.ok) {
                 console.log(
-                  `CPL with Kode CPL: ${kodecpl} deleted successfully`
+                  `CPMK with Kode CPMK: ${kodeCpmk} deleted successfully`
                 );
 
                 // Hapus baris dari tabel
                 this.closest("tr").remove();
               } else {
-                console.error("Failed to delete CPL", deleteResponse);
+                console.error("Failed to delete CPMK", deleteResponse);
               }
             } catch (error) {
               console.error("Error:", error);
@@ -206,16 +218,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (event.key === "Enter") {
       event.preventDefault(); // Mencegah form submit default
 
+      const kodecpmkInput = tbody.querySelector('input[name=kodecpmk]');
       const kodecplInput = tbody.querySelector('input[name="kodecpml"]');
       const deskripsiInput = tbody.querySelector('input[name="deskripsi"]');
 
+      const kodecpmk = kodecpmkInput.value.trim();
       const kodecpl = kodecplInput.value.trim();
       const deskripsi = deskripsiInput.value.trim();
 
       if (kodecpl && deskripsi) {
         try {
           const response = await fetch(
-            "http://localhost:9871/api/v1/users/cpl",
+            "http://localhost:9871/api/v1/users/cpmk/add",
             {
               method: "POST",
               headers: {
@@ -223,7 +237,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 Authorization: localStorage.getItem("authToken"), // Menggunakan token dari localStorage
               },
               body: JSON.stringify({
-                cpl: {
+                cpmk: {
+                  kodecpmk: kodecpmk,
                   kodecpl: kodecpl,
                   deskripsi: deskripsi,
                 },
@@ -239,11 +254,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             const newRow = document.createElement("tr");
             newRow.innerHTML = `
                             <td>${i}</td>
+                            <td>${newData.cpmk.deskripsi}</td>
                             <td>${newData.cpl.kodecpl}</td>
                             <td>${newData.cpl.deskripsi}</td>
                             <td>
                                 <button class="action-btn edit" title="Edit">✏️</button>
-                                <button class="action-btn delete" data-kodecpl="${newData.cpl.kodecpl}" title="Delete">🗑️</button>
+                                <button class="action-btn delete" data-kodecpmk="${newData.cpmk.kodecpl}" title="Delete">🗑️</button>
                             </td>
                         `;
             tbody.insertBefore(newRow, tbody.lastChild); // Menambahkan sebelum baris input
@@ -255,7 +271,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("Failed to save data", await response.json());
           }
         } catch (error) {
-          window.location.href = "cpl.html";
+          window.location.href = "cpmk.html";
           console.error("Error:", error);
         }
       } else {
